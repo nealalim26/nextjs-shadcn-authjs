@@ -1,31 +1,12 @@
-import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Settings2,
-  Plus,
-  Trash2,
-  Filter
-} from "lucide-react";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Settings2, Plus, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FilterCondition {
   id: string;
@@ -36,8 +17,12 @@ interface FilterCondition {
 }
 
 interface AdvancedFilterProps {
-  table: any;
-  columns: any[];
+  columns: Array<{
+    id: string;
+    header: string;
+    type: string;
+    accessorKey?: string;
+  }>;
   onApplyFilters: (filters: Record<string, any>) => void;
   currentFilters: Record<string, any>;
 }
@@ -58,12 +43,7 @@ const OPERATORS = [
   { value: 'not_in', label: 'Not In List', type: 'array' },
 ];
 
-const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
-  table,
-  columns,
-  onApplyFilters,
-  currentFilters
-}) => {
+const AdvancedFilter: React.FC<AdvancedFilterProps> = ({ columns, onApplyFilters, currentFilters }) => {
   const [showDialog, setShowDialog] = useState(false);
   const [conditions, setConditions] = useState<FilterCondition[]>([
     {
@@ -71,16 +51,12 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       column: '',
       operator: 'equals',
       value: '',
-      logic: 'AND'
-    }
+      logic: 'AND',
+    },
   ]);
 
   // Get filterable columns (exclude actions, select, etc.)
-  const filterableColumns = columns.filter(col =>
-    'accessorKey' in col &&
-    col.accessorKey &&
-    !['select', 'actions'].includes(col.accessorKey)
-  );
+  const filterableColumns = columns.filter(col => 'accessorKey' in col && col.accessorKey && typeof col.accessorKey === 'string' && !['select', 'actions'].includes(col.accessorKey));
 
   const addCondition = () => {
     const newCondition: FilterCondition = {
@@ -88,7 +64,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       column: '',
       operator: 'equals',
       value: '',
-      logic: 'AND'
+      logic: 'AND',
     };
     setConditions([...conditions, newCondition]);
   };
@@ -100,9 +76,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
   };
 
   const updateCondition = (id: string, field: keyof FilterCondition, value: any) => {
-    setConditions(conditions.map(c =>
-      c.id === id ? { ...c, [field]: value } : c
-    ));
+    setConditions(conditions.map(c => (c.id === id ? { ...c, [field]: value } : c)));
   };
 
   const getOperatorType = (operator: string) => {
@@ -121,8 +95,11 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
         <Input
           placeholder="Enter values separated by commas"
           value={Array.isArray(condition.value) ? condition.value.join(', ') : condition.value}
-          onChange={(e) => {
-            const values = e.target.value.split(',').map(v => v.trim()).filter(v => v);
+          onChange={e => {
+            const values = e.target.value
+              .split(',')
+              .map(v => v.trim())
+              .filter(v => v);
             updateCondition(condition.id, 'value', values);
           }}
         />
@@ -136,7 +113,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
           <Input
             placeholder="From"
             value={values[0] || ''}
-            onChange={(e) => {
+            onChange={e => {
               const newValues = [e.target.value, values[1] || ''];
               updateCondition(condition.id, 'value', newValues);
             }}
@@ -144,7 +121,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
           <Input
             placeholder="To"
             value={values[1] || ''}
-            onChange={(e) => {
+            onChange={e => {
               const newValues = [values[0] || '', e.target.value];
               updateCondition(condition.id, 'value', newValues);
             }}
@@ -153,13 +130,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       );
     }
 
-    return (
-      <Input
-        placeholder="Enter value"
-        value={typeof condition.value === 'string' ? condition.value : ''}
-        onChange={(e) => updateCondition(condition.id, 'value', e.target.value)}
-      />
-    );
+    return <Input placeholder="Enter value" value={typeof condition.value === 'string' ? condition.value : ''} onChange={e => updateCondition(condition.id, 'value', e.target.value)} />;
   };
 
   const convertConditionsToFilters = (conditions: FilterCondition[]): Record<string, any> => {
@@ -224,7 +195,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
     const validConditions = conditions.filter(c => c.column && c.value);
 
     if (validConditions.length === 0) {
-      toast.error("Please add at least one valid filter condition");
+      toast.error('Please add at least one valid filter condition');
       return;
     }
 
@@ -235,16 +206,18 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
   };
 
   const handleClearFilters = () => {
-    setConditions([{
-      id: '1',
-      column: '',
-      operator: 'equals',
-      value: '',
-      logic: 'AND'
-    }]);
+    setConditions([
+      {
+        id: '1',
+        column: '',
+        operator: 'equals',
+        value: '',
+        logic: 'AND',
+      },
+    ]);
     onApplyFilters({});
     setShowDialog(false);
-    toast.success("Cleared all filters");
+    toast.success('Cleared all filters');
   };
 
   const hasActiveFilters = Object.keys(currentFilters).length > 0;
@@ -265,9 +238,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Advanced Filter</DialogTitle>
-          <DialogDescription>
-            Create complex filter combinations to find exactly what you're looking for.
-          </DialogDescription>
+          <DialogDescription>Create complex filter combinations to find exactly what you&apos;re looking for.</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -275,12 +246,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
             <div key={condition.id} className="space-y-3">
               {index > 0 && (
                 <div className="flex items-center gap-2">
-                  <Select
-                    value={condition.logic}
-                    onValueChange={(value: 'AND' | 'OR') =>
-                      updateCondition(condition.id, 'logic', value)
-                    }
-                  >
+                  <Select value={condition.logic} onValueChange={(value: 'AND' | 'OR') => updateCondition(condition.id, 'logic', value)}>
                     <SelectTrigger className="w-20">
                       <SelectValue />
                     </SelectTrigger>
@@ -296,17 +262,14 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
               <div className="grid grid-cols-12 gap-3 items-end">
                 <div className="col-span-3">
                   <Label>Column</Label>
-                  <Select
-                    value={condition.column}
-                    onValueChange={(value) => updateCondition(condition.id, 'column', value)}
-                  >
+                  <Select value={condition.column} onValueChange={value => updateCondition(condition.id, 'column', value)}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select column" />
                     </SelectTrigger>
                     <SelectContent>
-                      {filterableColumns.map((col) => (
-                        <SelectItem key={col.accessorKey} value={col.accessorKey}>
-                          {typeof col.header === 'string' ? col.header : col.accessorKey}
+                      {filterableColumns.map(col => (
+                        <SelectItem key={col.accessorKey || col.id} value={col.accessorKey || col.id}>
+                          {typeof col.header === 'string' ? col.header : col.id}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -315,15 +278,12 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
 
                 <div className="col-span-3">
                   <Label>Operator</Label>
-                  <Select
-                    value={condition.operator}
-                    onValueChange={(value) => updateCondition(condition.id, 'operator', value)}
-                  >
+                  <Select value={condition.operator} onValueChange={value => updateCondition(condition.id, 'operator', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {OPERATORS.map((op) => (
+                      {OPERATORS.map(op => (
                         <SelectItem key={op.value} value={op.value}>
                           {op.label}
                         </SelectItem>
@@ -338,13 +298,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
                 </div>
 
                 <div className="col-span-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeCondition(condition.id)}
-                    disabled={conditions.length === 1}
-                    className="h-10 w-10 p-0"
-                  >
+                  <Button variant="outline" size="sm" onClick={() => removeCondition(condition.id)} disabled={conditions.length === 1} className="h-10 w-10 p-0">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -352,12 +306,7 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
             </div>
           ))}
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={addCondition}
-            className="w-full"
-          >
+          <Button variant="outline" size="sm" onClick={addCondition} className="w-full">
             <Plus className="h-4 w-4 mr-2" />
             Add Condition
           </Button>
@@ -370,13 +319,11 @@ const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
           <Button variant="outline" onClick={() => setShowDialog(false)}>
             Cancel
           </Button>
-          <Button onClick={handleApplyFilters}>
-            Apply Filters
-          </Button>
+          <Button onClick={handleApplyFilters}>Apply Filters</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default AdvancedFilter; 
+export default AdvancedFilter;

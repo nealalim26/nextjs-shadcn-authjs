@@ -1,36 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  BookmarkPlus,
-  Bookmark,
-  Trash2,
-  Clock,
-  Building,
-  MapPin,
-  Calendar,
-  Filter
-} from "lucide-react";
-import { toast } from "sonner";
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { BookmarkPlus, Bookmark, Trash2, Clock, Building, MapPin, Filter } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FilterPreset {
   id: string;
@@ -42,7 +18,6 @@ interface FilterPreset {
 }
 
 interface FilterPresetsProps {
-  table: any;
   tableName: string;
   onApplyPreset: (filters: Record<string, any>) => void;
   currentFilters: Record<string, any>;
@@ -50,61 +25,56 @@ interface FilterPresetsProps {
 
 const DEFAULT_PRESETS: FilterPreset[] = [
   {
-    id: "recent",
-    name: "Recent Assets",
-    description: "Assets added in the last 30 days",
+    id: 'recent',
+    name: 'Recent Assets',
+    description: 'Assets added in the last 30 days',
     filters: {
       datetime_encoded: {
         type: 'dateRange',
         from: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        to: new Date().toISOString()
-      }
+        to: new Date().toISOString(),
+      },
     },
     createdAt: new Date().toISOString(),
-    isDefault: true
+    isDefault: true,
   },
   {
-    id: "it-department",
-    name: "IT Department",
-    description: "All IT department assets",
+    id: 'it-department',
+    name: 'IT Department',
+    description: 'All IT department assets',
     filters: {
-      department: "IT"
+      department: 'IT',
     },
     createdAt: new Date().toISOString(),
-    isDefault: true
+    isDefault: true,
   },
   {
-    id: "main-office",
-    name: "Main Office",
-    description: "Assets located in main office",
+    id: 'main-office',
+    name: 'Main Office',
+    description: 'Assets located in main office',
     filters: {
-      location: "Main Office"
+      location: 'Main Office',
     },
     createdAt: new Date().toISOString(),
-    isDefault: true
+    isDefault: true,
   },
   {
-    id: "computers",
-    name: "Computer Hardware",
-    description: "All computer hardware assets",
+    id: 'computers',
+    name: 'Computer Hardware',
+    description: 'All computer hardware assets',
     filters: {
-      category: "YBFA08"
+      category: 'YBFA08',
     },
     createdAt: new Date().toISOString(),
-    isDefault: true
-  }
+    isDefault: true,
+  },
 ];
 
-const FilterPresets: React.FC<FilterPresetsProps> = ({
-  table,
-  tableName,
-  onApplyPreset,
-  currentFilters
-}) => {
+const FilterPresets: React.FC<FilterPresetsProps> = ({ tableName, onApplyPreset, currentFilters }) => {
   const [presets, setPresets] = useState<FilterPreset[]>(DEFAULT_PRESETS);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [presetName, setPresetName] = useState("");
-  const [presetDescription, setPresetDescription] = useState("");
+  const [presetName, setPresetName] = useState('');
+  const [presetDescription, setPresetDescription] = useState('');
 
   // Load saved presets from localStorage
   useEffect(() => {
@@ -127,7 +97,7 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
 
   const handleSavePreset = () => {
     if (!presetName.trim()) {
-      toast.error("Please enter a preset name");
+      toast.error('Please enter a preset name');
       return;
     }
 
@@ -137,7 +107,7 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
       description: presetDescription.trim() || undefined,
       filters: { ...currentFilters },
       createdAt: new Date().toISOString(),
-      isDefault: false
+      isDefault: false,
     };
 
     const updatedPresets = [...presets, newPreset];
@@ -146,21 +116,21 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
 
     toast.success(`Filter preset "${presetName}" saved successfully`);
     setShowSaveDialog(false);
-    setPresetName("");
-    setPresetDescription("");
+    setPresetName('');
+    setPresetDescription('');
   };
 
   const handleDeletePreset = (presetId: string) => {
     const preset = presets.find(p => p.id === presetId);
     if (preset?.isDefault) {
-      toast.error("Cannot delete default presets");
+      toast.error('Cannot delete default presets');
       return;
     }
 
     const updatedPresets = presets.filter(p => p.id !== presetId);
     setPresets(updatedPresets);
     savePresetsToStorage(updatedPresets);
-    toast.success("Filter preset deleted");
+    toast.success('Filter preset deleted');
   };
 
   const handleApplyPreset = (preset: FilterPreset) => {
@@ -169,10 +139,10 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
   };
 
   const getPresetIcon = (preset: FilterPreset) => {
-    if (preset.id === "recent") return <Clock className="h-4 w-4" />;
-    if (preset.id === "it-department") return <Building className="h-4 w-4" />;
-    if (preset.id === "main-office") return <MapPin className="h-4 w-4" />;
-    if (preset.id === "computers") return <Filter className="h-4 w-4" />;
+    if (preset.id === 'recent') return <Clock className="h-4 w-4" />;
+    if (preset.id === 'it-department') return <Building className="h-4 w-4" />;
+    if (preset.id === 'main-office') return <MapPin className="h-4 w-4" />;
+    if (preset.id === 'computers') return <Filter className="h-4 w-4" />;
     return <Bookmark className="h-4 w-4" />;
   };
 
@@ -196,20 +166,12 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
           <DropdownMenuLabel>Quick Filters</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {DEFAULT_PRESETS.map((preset) => (
-            <DropdownMenuItem
-              key={preset.id}
-              onClick={() => handleApplyPreset(preset)}
-              className="flex items-center gap-2 cursor-pointer"
-            >
+          {DEFAULT_PRESETS.map(preset => (
+            <DropdownMenuItem key={preset.id} onClick={() => handleApplyPreset(preset)} className="flex items-center gap-2 cursor-pointer">
               {getPresetIcon(preset)}
               <div className="flex-1">
                 <div className="font-medium">{preset.name}</div>
-                {preset.description && (
-                  <div className="text-xs text-muted-foreground">
-                    {preset.description}
-                  </div>
-                )}
+                {preset.description && <div className="text-xs text-muted-foreground">{preset.description}</div>}
               </div>
             </DropdownMenuItem>
           ))}
@@ -218,48 +180,42 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
             <>
               <DropdownMenuSeparator />
               <DropdownMenuLabel>Custom Presets</DropdownMenuLabel>
-              {presets.filter(p => !p.isDefault).map((preset) => (
-                <DropdownMenuItem
-                  key={preset.id}
-                  className="flex items-center gap-2 cursor-pointer group"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleApplyPreset(preset);
-                  }}
-                >
-                  <Bookmark className="h-4 w-4" />
-                  <div className="flex-1">
-                    <div className="font-medium">{preset.name}</div>
-                    {preset.description && (
-                      <div className="text-xs text-muted-foreground">
-                        {preset.description}
-                      </div>
-                    )}
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePreset(preset.id);
+              {presets
+                .filter(p => !p.isDefault)
+                .map(preset => (
+                  <DropdownMenuItem
+                    key={preset.id}
+                    className="flex items-center gap-2 cursor-pointer group"
+                    onClick={e => {
+                      e.preventDefault();
+                      handleApplyPreset(preset);
                     }}
                   >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </DropdownMenuItem>
-              ))}
+                    <Bookmark className="h-4 w-4" />
+                    <div className="flex-1">
+                      <div className="font-medium">{preset.name}</div>
+                      {preset.description && <div className="text-xs text-muted-foreground">{preset.description}</div>}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleDeletePreset(preset.id);
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </DropdownMenuItem>
+                ))}
             </>
           )}
 
           <DropdownMenuSeparator />
           <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
             <DialogTrigger asChild>
-              <DropdownMenuItem
-                onSelect={(e) => e.preventDefault()}
-                className="flex items-center gap-2 cursor-pointer"
-                disabled={!hasActiveFilters}
-              >
+              <DropdownMenuItem onSelect={e => e.preventDefault()} className="flex items-center gap-2 cursor-pointer" disabled={!hasActiveFilters}>
                 <BookmarkPlus className="h-4 w-4" />
                 Save Current Filters
               </DropdownMenuItem>
@@ -267,28 +223,16 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Save Filter Preset</DialogTitle>
-                <DialogDescription>
-                  Save your current filter combination as a preset for quick access later.
-                </DialogDescription>
+                <DialogDescription>Save your current filter combination as a preset for quick access later.</DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="preset-name">Preset Name</Label>
-                  <Input
-                    id="preset-name"
-                    value={presetName}
-                    onChange={(e) => setPresetName(e.target.value)}
-                    placeholder="Enter preset name..."
-                  />
+                  <Input id="preset-name" value={presetName} onChange={e => setPresetName(e.target.value)} placeholder="Enter preset name..." />
                 </div>
                 <div>
                   <Label htmlFor="preset-description">Description (Optional)</Label>
-                  <Input
-                    id="preset-description"
-                    value={presetDescription}
-                    onChange={(e) => setPresetDescription(e.target.value)}
-                    placeholder="Enter description..."
-                  />
+                  <Input id="preset-description" value={presetDescription} onChange={e => setPresetDescription(e.target.value)} placeholder="Enter description..." />
                 </div>
                 <div className="text-sm text-muted-foreground">
                   <strong>Current Filters:</strong>
@@ -307,9 +251,7 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
                 <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleSavePreset}>
-                  Save Preset
-                </Button>
+                <Button onClick={handleSavePreset}>Save Preset</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -319,4 +261,4 @@ const FilterPresets: React.FC<FilterPresetsProps> = ({
   );
 };
 
-export default FilterPresets; 
+export default FilterPresets;

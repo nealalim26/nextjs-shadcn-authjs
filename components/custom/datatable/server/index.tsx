@@ -1,54 +1,23 @@
-"use client"
-import React, { useMemo, useState, forwardRef, useImperativeHandle, Fragment, useEffect } from "react"
-import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query"
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getFilteredRowModel,
-  FilterFn,
-  SortingState,
-  getSortedRowModel,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
-import { Loader2, Check, ChevronsUpDown, CircleX, RefreshCcw } from "lucide-react";
+'use client';
+import React, { useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
+import { ColumnDef, flexRender, getCoreRowModel, useReactTable, getFilteredRowModel, SortingState, getSortedRowModel, ColumnFiltersState } from '@tanstack/react-table';
+import { Check, ChevronsUpDown, CircleX, RefreshCcw } from 'lucide-react';
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from '@/components/ui/button';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import { TriangleAlert } from "lucide-react";
-import DataTableFacetedFilter, { DataTableDateFilter } from "../components/faceted-filter";
-import DataTableViewOptions from "../components/view-options";
-import DataTablePagination from "../components/pagination";
-import DataTableSortControls from "../components/sort-controls";
-import FilterPresets from "../components/filter-presets";
-import AdvancedFilter from "../components/advanced-filter";
-
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { TriangleAlert } from 'lucide-react';
+import DataTableFacetedFilter, { DataTableDateFilter } from '../components/faceted-filter';
+import DataTableViewOptions from '../components/view-options';
+import DataTablePagination from '../components/pagination';
+import DataTableSortControls from '../components/sort-controls';
+import FilterPresets from '../components/filter-presets';
+import AdvancedFilter from '../components/advanced-filter';
 
 // Define a custom filter option interface
 interface FilterOption {
@@ -87,13 +56,6 @@ export interface DataTableProps<TData> {
   columnVisibility?: Record<string, boolean>;
 }
 
-// Define custom ColumnMeta interface to include fixed property
-declare module '@tanstack/react-table' {
-  interface ColumnMeta<TData extends unknown, TValue> {
-    fixed?: boolean;
-  }
-}
-
 const DataTable = forwardRef<{ handleReload: () => void }, any>(
   (
     {
@@ -111,7 +73,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
       debugCallback,
       onDataChange,
       additionalQueryParams,
-      columnVisibility: initialColumnVisibility
+      columnVisibility: initialColumnVisibility,
     }: any,
     ref
   ) => {
@@ -131,7 +93,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
       // Convert the initialColumnFilters object to the format expected by TanStack Table
       return Object.entries(initialColumnFilters).map(([id, value]) => ({
         id,
-        value
+        value,
       }));
     });
     const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -142,34 +104,37 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
 
     // Prepare column filters for API request
     const apiColumnFilters = useMemo(() => {
-      return columnFilters.reduce((acc, filter) => {
-        // Handle date range objects for date filtering
-        if (filter.value && typeof filter.value === 'object' && 'from' in filter.value && 'to' in filter.value) {
-          // Pass date range as a special format the backend can understand
-          acc[filter.id] = {
-            type: 'dateRange',
-            from: filter.value.from,
-            to: filter.value.to
-          };
-        } else {
-          // Pass all other filters directly
-          acc[filter.id] = filter.value;
-        }
-        return acc;
-      }, {} as Record<string, unknown>);
+      return columnFilters.reduce(
+        (acc, filter) => {
+          // Handle date range objects for date filtering
+          if (filter.value && typeof filter.value === 'object' && 'from' in filter.value && 'to' in filter.value) {
+            // Pass date range as a special format the backend can understand
+            acc[filter.id] = {
+              type: 'dateRange',
+              from: filter.value.from,
+              to: filter.value.to,
+            };
+          } else {
+            // Pass all other filters directly
+            acc[filter.id] = filter.value;
+          }
+          return acc;
+        },
+        {} as Record<string, unknown>
+      );
     }, [columnFilters]);
 
     // Handle applying filter presets
     const handleApplyPreset = (presetFilters: Record<string, any>) => {
       const newColumnFilters = Object.entries(presetFilters).map(([id, value]) => ({
         id,
-        value
+        value,
       }));
       setColumnFilters(newColumnFilters);
     };
 
     const dataQuery = useQuery({
-      queryKey: ["data", tableName, pagination, searchQuery, sorting, columnFilters],
+      queryKey: ['data', tableName, pagination, searchQuery, sorting, columnFilters],
       queryFn: async () => {
         console.log('DataTable query executing with filters:', columnFilters);
         console.log('API column filters:', apiColumnFilters);
@@ -200,14 +165,17 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
           pageSize: pagination.pageSize,
           pageNumber: pagination.page,
           orderBy: sortingParam,
-          multiSort: sorting.length > 1 ? sorting.map(sort => ({
-            column: sort.id,
-            direction: sort.desc ? 'desc' : 'asc'
-          })) : undefined,
+          multiSort:
+            sorting.length > 1
+              ? sorting.map(sort => ({
+                  column: sort.id,
+                  direction: sort.desc ? 'desc' : 'asc',
+                }))
+              : undefined,
           searchColumns,
           searchQuery,
           columnFilters: apiColumnFilters,
-          additionalParams: additionalQueryParams || { showAll: 'true' }
+          additionalParams: additionalQueryParams || { showAll: 'true' },
         };
 
         const headers: Record<string, string> = {
@@ -227,9 +195,9 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
         // For content_revision table, ensure admin privileges
         if (tableName === 'content_revision') {
           console.log('Enforcing admin access for content_revision table');
-          headers['x-user-type'] = 'Admin';  // Force admin role for content table
+          headers['x-user-type'] = 'Admin'; // Force admin role for content table
           if (!headers['x-user-id']) {
-            headers['x-user-id'] = '1';  // Default admin ID if none provided
+            headers['x-user-id'] = '1'; // Default admin ID if none provided
           }
         }
 
@@ -237,36 +205,36 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
           method: 'POST',
           headers,
           body: JSON.stringify(payload),
-        })
+        });
 
         console.log('DataTable API request sent:', {
           url: apiUrl,
           tableName,
           userId,
           userType,
-          additionalParams: payload.additionalParams
+          additionalParams: payload.additionalParams,
         });
 
-        const data = await response.json()
+        const data = await response.json();
 
         console.log('DataTable API response received:', {
           success: !!data?.data,
           recordCount: data?.data?.length || 0,
-          pagination: data?.pagination
+          pagination: data?.pagination,
         });
 
-        return data
+        return data;
       },
       placeholderData: keepPreviousData,
-    })
+    });
 
     // Fetch suggestions
     const suggestionsQuery = useQuery({
-      queryKey: ["suggestions", tableName],
+      queryKey: ['suggestions', tableName],
       queryFn: async () => {
         const payload = {
           table: tableName,
-          column: searchColumns?.[0] || "title", // We'll get suggestions for the first search column
+          column: searchColumns?.[0] || 'title', // We'll get suggestions for the first search column
         };
 
         const response = await fetch(`${apiUrl?.replace('/pagination', '/pagination/suggestions')}`, {
@@ -303,7 +271,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
       }
     }, [dataQuery.data, onDataChange]);
 
-    const isLoading = dataQuery.isFetching || dataQuery.isRefetching
+    const isLoading = dataQuery.isFetching || dataQuery.isRefetching;
 
     const table = useReactTable({
       data: dataQuery.data?.data ?? defaultData,
@@ -321,7 +289,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
         columnFilters,
         columnVisibility,
       },
-      onPaginationChange: (updater) => {
+      onPaginationChange: updater => {
         if (typeof updater === 'function') {
           const newPagination = updater({
             pageIndex: pagination.page - 1,
@@ -356,7 +324,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
       setRefetching(true);
 
       // Force invalidate the cache
-      await queryClient.invalidateQueries({ queryKey: ["data", tableName] });
+      await queryClient.invalidateQueries({ queryKey: ['data', tableName] });
 
       // Refetch with fresh data
       const result = await dataQuery.refetch();
@@ -364,11 +332,11 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
       console.log('DataTable reload complete:', {
         success: !!result.data?.data,
         recordCount: result.data?.data?.length || 0,
-        error: result.error
+        error: result.error,
       });
 
       setRefetching(false);
-    }
+    };
 
     // Expose handleReload to parent components
     useImperativeHandle(ref, () => ({
@@ -376,31 +344,28 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
     }));
 
     // Filter suggestions based on input
-    const filteredSuggestions = searchQuery
-      ? suggestions.filter(suggestion =>
-        suggestion.toLowerCase().includes(searchQuery.toLowerCase()))
-      : suggestions;
+    const filteredSuggestions = searchQuery ? suggestions.filter(suggestion => suggestion.toLowerCase().includes(searchQuery.toLowerCase())) : suggestions;
 
     // Find columns by accessor key
     const getColumnByAccessorKey = (accessorKey: string) => {
-      return columns.find((col: any) =>
-        'accessorKey' in col && col.accessorKey === accessorKey
-      );
+      return columns.find((col: any) => 'accessorKey' in col && col.accessorKey === accessorKey);
     };
 
-    const authorColumn = getColumnByAccessorKey('author') || columns[1];
-    const statusColumn = getColumnByAccessorKey('status') || columns[2];
     const dateColumn = getColumnByAccessorKey(dateFilterColumn);
 
     // Determine which faceted filters to display based on provided options
-    const facetedFilters: { columnId: string; title: string; options: FilterOption[] }[] = [];
+    const facetedFilters: {
+      columnId: string;
+      title: string;
+      options: FilterOption[];
+    }[] = [];
 
     if (customFilters && customFilters.length) {
       customFilters.forEach((filter: any) => {
         facetedFilters.push({
           columnId: filter.columnId,
           title: filter.title,
-          options: filter.options
+          options: filter.options,
         });
       });
     }
@@ -412,46 +377,27 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
             <div className="flex flex-wrap items-center gap-2">
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full sm:w-[300px] justify-between"
-                  >
-                    {searchQuery || "Search..."}
+                  <Button variant="outline" role="combobox" aria-expanded={open} className="w-full sm:w-[300px] justify-between">
+                    {searchQuery || 'Search...'}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[300px] p-0">
                   <Command>
-                    <CommandInput
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onValueChange={setSearchQuery}
-                    />
+                    <CommandInput placeholder="Search..." value={searchQuery} onValueChange={setSearchQuery} />
                     <CommandList>
-                      <CommandEmpty>
-                        {searchQuery
-                          ? `No results found for "${searchQuery}"`
-                          : `No ${searchColumns?.[0] ? searchColumns[0].replace('_', ' ') : 'items'} found.`
-                        }
-                      </CommandEmpty>
+                      <CommandEmpty>{searchQuery ? `No results found for "${searchQuery}"` : `No ${searchColumns?.[0] ? searchColumns[0].replace('_', ' ') : 'items'} found.`}</CommandEmpty>
                       <CommandGroup>
-                        {filteredSuggestions.map((suggestion) => (
+                        {filteredSuggestions.map(suggestion => (
                           <CommandItem
                             key={suggestion}
                             value={suggestion}
-                            onSelect={(currentValue) => {
+                            onSelect={currentValue => {
                               setSearchQuery(currentValue);
                               setOpen(false);
                             }}
                           >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                searchQuery === suggestion ? "opacity-100" : "opacity-0"
-                              )}
-                            />
+                            <Check className={cn('mr-2 h-4 w-4', searchQuery === suggestion ? 'opacity-100' : 'opacity-0')} />
                             {suggestion}
                           </CommandItem>
                         ))}
@@ -463,15 +409,13 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
 
               <div className="flex flex-wrap items-center gap-2">
                 {/* Render faceted filters dynamically based on provided options */}
-                {facetedFilters.map((filter) => {
+                {facetedFilters.map(filter => {
                   // First try to get column by the exact columnId
                   let column = table.getColumn(filter.columnId);
 
                   // If not found, try to find by accessorKey (TanStack Table uses accessorKey as column id)
                   if (!column) {
-                    const columnByAccessor = columns.find((col: any) =>
-                      'accessorKey' in col && col.accessorKey === filter.columnId
-                    );
+                    const columnByAccessor = columns.find((col: any) => 'accessorKey' in col && col.accessorKey === filter.columnId);
 
                     if (columnByAccessor) {
                       // TanStack Table uses accessorKey as the column id when no explicit id is provided
@@ -481,30 +425,18 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
 
                   // If still not found, log warning and skip
                   if (!column) {
-                    console.warn(`Column with id '${filter.columnId}' does not exist in table. Available columns:`,
-                      table.getAllColumns().map(col => col.id));
+                    console.warn(
+                      `Column with id '${filter.columnId}' does not exist in table. Available columns:`,
+                      table.getAllColumns().map(col => col.id)
+                    );
                     return null;
                   }
 
                   console.log(`Rendering filter for column: ${filter.columnId}`);
-                  return (
-                    <DataTableFacetedFilter
-                      key={filter.columnId}
-                      table={table}
-                      column={column}
-                      title={filter.title}
-                      options={filter.options}
-                    />
-                  );
+                  return <DataTableFacetedFilter key={filter.columnId} column={column} title={filter.title} options={filter.options} />;
                 })}
 
-                {enableDateFilter && dateColumn && (
-                  <DataTableDateFilter
-                    table={table}
-                    column={table.getColumn(dateFilterColumn) || dateColumn}
-                    title="Created At"
-                  />
-                )}
+                {enableDateFilter && dateColumn && <DataTableDateFilter column={table.getColumn(dateFilterColumn) || dateColumn} title="Created At" />}
 
                 {/* Only show reset button when user-applied filters exist (not including initialColumnFilters) */}
                 {table.getState().columnFilters.some(filter => {
@@ -513,45 +445,35 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
 
                   const initialValue = initialColumnFilters[filter.id];
                   // If filter exists but wasn't in initial filters, or if value is different
-                  return initialValue === undefined ||
-                    JSON.stringify(initialValue) !== JSON.stringify(filter.value);
+                  return initialValue === undefined || JSON.stringify(initialValue) !== JSON.stringify(filter.value);
                 }) && (
-                    <Button
-                      variant="ghost"
-                      onClick={() => {
-                        // Reset to initial filters instead of clearing everything
-                        if (initialColumnFilters) {
-                          const initialFilters = Object.entries(initialColumnFilters).map(([id, value]) => ({
-                            id,
-                            value
-                          }));
-                          setColumnFilters(initialFilters);
-                        } else {
-                          table.resetColumnFilters();
-                        }
-                      }}
-                      className="h-8 px-2 lg:px-3">
-                      Reset
-                      <CircleX className="ml-2 h-4 w-4" />
-                    </Button>
-                  )}
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      // Reset to initial filters instead of clearing everything
+                      if (initialColumnFilters) {
+                        const initialFilters = Object.entries(initialColumnFilters).map(([id, value]) => ({
+                          id,
+                          value,
+                        }));
+                        setColumnFilters(initialFilters);
+                      } else {
+                        table.resetColumnFilters();
+                      }
+                    }}
+                    className="h-8 px-2 lg:px-3"
+                  >
+                    Reset
+                    <CircleX className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
           )}
           <div className="flex flex-wrap items-center gap-2 justify-end">
-            <FilterPresets
-              table={table}
-              tableName={tableName}
-              onApplyPreset={handleApplyPreset}
-              currentFilters={apiColumnFilters}
-            />
-            <AdvancedFilter
-              table={table}
-              columns={columns}
-              onApplyFilters={handleApplyPreset}
-              currentFilters={apiColumnFilters}
-            />
-            <Button className='h-8' variant="outline" size="sm" onClick={handleReload}>
+            <FilterPresets tableName={tableName} onApplyPreset={handleApplyPreset} currentFilters={apiColumnFilters} />
+            <AdvancedFilter columns={columns} onApplyFilters={handleApplyPreset} currentFilters={apiColumnFilters} />
+            <Button className="h-8" variant="outline" size="sm" onClick={handleReload}>
               <RefreshCcw className={`h-4 w-4 mr-2 ${refetching || isLoading ? 'animate-spin' : ''}`} />
               <span>Reload</span>
             </Button>
@@ -563,34 +485,27 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
           <div className="relative w-full overflow-auto">
             <Table className="border-collapse">
               <TableHeader>
-                {table.getHeaderGroups().map((headerGroup) => {
+                {table.getHeaderGroups().map(headerGroup => {
                   return (
                     <TableRow key={headerGroup.id} className="text-xs border-border">
-                      {headerGroup.headers.map((header) => {
-                        const isFixed = header.column.columnDef.meta?.fixed === true;
+                      {headerGroup.headers.map(header => {
+                        const isFixed = (header.column.columnDef.meta as any)?.fixed === true;
 
                         // Find the last sticky column
-                        const visibleColumns = headerGroup.headers
-                          .filter(h => h.column.getIsVisible())
-                          .filter(h => h.column.columnDef.meta?.fixed === true);
+                        const visibleColumns = headerGroup.headers.filter(h => h.column.getIsVisible()).filter(h => (h.column.columnDef.meta as any)?.fixed === true);
 
-                        const isLastSticky = visibleColumns.length > 0 &&
-                          visibleColumns[visibleColumns.length - 1].id === header.id;
+                        const isLastSticky = visibleColumns.length > 0 && visibleColumns[visibleColumns.length - 1].id === header.id;
 
                         return (
                           <TableHead
                             key={header.id}
                             className={cn(
-                              isFixed && "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
-                              isLastSticky && "md:after:w-[2px]"
+                              isFixed &&
+                                "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
+                              isLastSticky && 'md:after:w-[2px]'
                             )}
                           >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                           </TableHead>
                         );
                       })}
@@ -601,69 +516,63 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
               <TableBody>
                 {isLoading ? (
                   // Skeleton loading state with 10 rows
-                  Array(10).fill(0).map((_, index) => {
-                    const isLastRow = index === 9; // Last row in skeleton state
+                  Array(10)
+                    .fill(0)
+                    .map((_, index) => {
+                      const isLastRow = index === 9; // Last row in skeleton state
 
-                    return (
-                      <TableRow key={`skeleton-${index}`} className="border-border">
-                        {table.getVisibleFlatColumns().map((column, cellIndex) => {
-                          const isFixed = column.columnDef.meta?.fixed === true;
+                      return (
+                        <TableRow key={`skeleton-${index}`} className="border-border">
+                          {table.getVisibleFlatColumns().map((column, cellIndex) => {
+                            const isFixed = (column.columnDef.meta as any)?.fixed === true;
 
-                          // Find the last sticky column
-                          const visibleColumns = table.getVisibleFlatColumns()
-                            .filter(c => c.columnDef.meta?.fixed === true);
+                            // Find the last sticky column
+                            const visibleColumns = table.getVisibleFlatColumns().filter(c => (c.columnDef.meta as any)?.fixed === true);
 
-                          const isLastSticky = visibleColumns.length > 0 &&
-                            cellIndex === visibleColumns.length - 1 && isFixed;
+                            const isLastSticky = visibleColumns.length > 0 && cellIndex === visibleColumns.length - 1 && isFixed;
 
-                          return (
-                            <TableCell
-                              key={`skeleton-cell-${index}-${cellIndex}`}
-                              className={cn(
-                                isFixed && "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
-                                isLastSticky && "md:after:w-[2px]",
-                                isLastRow && !isFixed && "border-b-border"
-                              )}
-                            >
-                              <Skeleton className="h-5 w-full" />
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    );
-                  })
+                            return (
+                              <TableCell
+                                key={`skeleton-cell-${index}-${cellIndex}`}
+                                className={cn(
+                                  isFixed &&
+                                    "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
+                                  isLastSticky && 'md:after:w-[2px]',
+                                  isLastRow && !isFixed && 'border-b-border'
+                                )}
+                              >
+                                <Skeleton className="h-5 w-full" />
+                              </TableCell>
+                            );
+                          })}
+                        </TableRow>
+                      );
+                    })
                 ) : table.getRowModel().rows?.length ? (
                   table.getRowModel().rows.map((row, rowIndex) => {
                     const isLastRow = rowIndex === table.getRowModel().rows.length - 1;
 
                     return (
-                      <TableRow
-                        key={row.id}
-                        className="border-border"
-                        data-state={row.getIsSelected() && "selected"}>
-                        {row.getVisibleCells().map((cell) => {
-                          const isFixed = cell.column.columnDef.meta?.fixed === true;
+                      <TableRow key={row.id} className="border-border" data-state={row.getIsSelected() && 'selected'}>
+                        {row.getVisibleCells().map(cell => {
+                          const isFixed = (cell.column.columnDef.meta as any)?.fixed === true;
 
                           // Find the last sticky column
-                          const visibleCells = row.getVisibleCells()
-                            .filter(c => c.column.columnDef.meta?.fixed === true);
+                          const visibleCells = row.getVisibleCells().filter(c => (c.column.columnDef.meta as any)?.fixed === true);
 
-                          const isLastSticky = visibleCells.length > 0 &&
-                            visibleCells[visibleCells.length - 1].id === cell.id;
+                          const isLastSticky = visibleCells.length > 0 && visibleCells[visibleCells.length - 1].id === cell.id;
 
                           return (
                             <TableCell
                               key={cell.id}
                               className={cn(
-                                isFixed && "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
-                                isLastSticky && "md:after:w-[2px]",
-                                isLastRow && !isFixed && "border-b-border"
+                                isFixed &&
+                                  "md:sticky md:left-0 md:z-20 md:bg-background dark:md:bg-background md:border-r-[1px] md:border-r-border/70 border-b-border md:after:absolute md:after:top-0 md:after:right-0 md:after:bottom-0 md:after:w-[1px] md:after:bg-border md:after:content-['']",
+                                isLastSticky && 'md:after:w-[2px]',
+                                isLastRow && !isFixed && 'border-b-border'
                               )}
                             >
-                              {flexRender(
-                                cell.column.columnDef.cell,
-                                cell.getContext(),
-                              )}
+                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </TableCell>
                           );
                         })}
@@ -672,10 +581,7 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
                   })
                 ) : (
                   <TableRow className="border-border">
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
                       <div className="flex gap-4 justify-center items-center">
                         <TriangleAlert className="h-8 w-8 text-red-500" />
                         <span className="text-md">No record found.</span>
@@ -691,10 +597,11 @@ const DataTable = forwardRef<{ handleReload: () => void }, any>(
         <div className="w-full overflow-auto">
           <DataTablePagination table={table} totalDocs={dataQuery.data?.pagination?.totalDocs || 0} />
         </div>
-      </div >
-    )
-  });
+      </div>
+    );
+  }
+);
 
 DataTable.displayName = 'DataTable';
 
-export default DataTable
+export default DataTable;

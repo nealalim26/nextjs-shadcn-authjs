@@ -1,67 +1,68 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { signIn, getProviders } from "next-auth/react"
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { signIn } from 'next-auth/react';
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 
 const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(1, "Password is required"),
-})
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
 
-type LoginForm = z.infer<typeof loginSchema>
+type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  })
+  });
 
   const onSubmit = async (data: LoginForm) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const result = await signIn("credentials", {
+      const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
-      })
+      });
 
       if (result?.error) {
-        console.error("Sign in error:", result.error)
+        console.error('Sign in error:', result.error);
       } else {
-        window.location.href = "/"
+        window.location.href = '/';
       }
     } catch (error) {
-      console.error("Sign in error:", error)
+      console.error('Sign in error:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleOAuthSignIn = async (provider: string) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      await signIn(provider, { callbackUrl: "/" })
+      await signIn(provider, { callbackUrl: '/' });
     } catch (error) {
-      console.error("OAuth sign in error:", error)
-      setIsLoading(false)
+      console.error('OAuth sign in error:', error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -92,9 +93,7 @@ export default function LoginPage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Email
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium text-gray-700">Email</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -113,27 +112,17 @@ export default function LoginPage() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium text-gray-700">
-                        Password
-                      </FormLabel>
+                      <FormLabel className="text-sm font-medium text-gray-700">Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
                             {...field}
-                            type={showPassword ? "text" : "password"}
+                            type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
                             className="mt-1 w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                           />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                          >
-                            {showPassword ? (
-                              <EyeOff className="h-4 w-4 text-gray-400" />
-                            ) : (
-                              <Eye className="h-4 w-4 text-gray-400" />
-                            )}
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                            {showPassword ? <EyeOff className="h-4 w-4 text-gray-400" /> : <Eye className="h-4 w-4 text-gray-400" />}
                           </button>
                         </div>
                       </FormControl>
@@ -143,18 +132,14 @@ export default function LoginPage() {
                 />
               </div>
 
-              <Button
-                type="submit"
-                className="w-full py-2 px-4 rounded-md font-medium"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full py-2 px-4 rounded-md font-medium" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Logging in...
                   </>
                 ) : (
-                  "Login"
+                  'Login'
                 )}
               </Button>
 
@@ -162,7 +147,7 @@ export default function LoginPage() {
                 type="button"
                 variant="outline"
                 className="w-full border border-gray-300 text-gray-700 py-2 px-4 rounded-md font-medium hover:bg-gray-50 bg-transparent"
-                onClick={() => handleOAuthSignIn("google")}
+                onClick={() => handleOAuthSignIn('google')}
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -171,7 +156,7 @@ export default function LoginPage() {
                     Connecting...
                   </>
                 ) : (
-                  "Login with Google"
+                  'Login with Google'
                 )}
               </Button>
 
@@ -198,12 +183,8 @@ export default function LoginPage() {
 
       {/* Right Column - Image */}
       <div className="flex-1 relative">
-        <img
-          src="/placeholder.svg?height=800&width=600"
-          alt="Login background"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <Image src="/placeholder.svg?height=800&width=600" alt="Login background" fill className="object-cover" priority />
       </div>
     </div>
-  )
+  );
 }

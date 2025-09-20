@@ -1,45 +1,13 @@
 import React, { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  ChevronDown,
-  Trash2,
-  Download,
-  Edit,
-  Archive,
-  X
-} from "lucide-react";
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { ChevronDown, Trash2, Download, Edit, Archive, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export interface BulkOperationsProps {
   selectedItems: string[];
-  totalItems: number;
   onClearSelection: () => void;
   onBulkDelete: (ids: string[]) => Promise<void>;
   onBulkExport: (ids: string[]) => Promise<void>;
@@ -47,15 +15,7 @@ export interface BulkOperationsProps {
   onBulkArchive?: (ids: string[]) => Promise<void>;
 }
 
-export function BulkOperations({
-  selectedItems,
-  totalItems,
-  onClearSelection,
-  onBulkDelete,
-  onBulkExport,
-  onBulkEdit,
-  onBulkArchive
-}: BulkOperationsProps) {
+export function BulkOperations({ selectedItems, onClearSelection, onBulkDelete, onBulkExport, onBulkEdit, onBulkArchive }: BulkOperationsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,8 +31,8 @@ export function BulkOperations({
       onClearSelection();
       toast.success(`Successfully deleted ${selectedItems.length} items`);
     } catch (error) {
-      toast.error("Failed to delete selected items");
-      console.error("Bulk delete error:", error);
+      toast.error('Failed to delete selected items');
+      console.error('Bulk delete error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -84,8 +44,8 @@ export function BulkOperations({
       await onBulkExport(selectedItems);
       toast.success(`Successfully exported ${selectedItems.length} items`);
     } catch (error) {
-      toast.error("Failed to export selected items");
-      console.error("Bulk export error:", error);
+      toast.error('Failed to export selected items');
+      console.error('Bulk export error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -100,8 +60,8 @@ export function BulkOperations({
       onClearSelection();
       toast.success(`Successfully archived ${selectedItems.length} items`);
     } catch (error) {
-      toast.error("Failed to archive selected items");
-      console.error("Bulk archive error:", error);
+      toast.error('Failed to archive selected items');
+      console.error('Bulk archive error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -114,18 +74,11 @@ export function BulkOperations({
           <Badge variant="secondary" className="bg-blue-100 text-blue-800">
             {selectedItems.length}
           </Badge>
-          <span className="text-sm text-blue-800">
-            {selectedItems.length === 1 ? 'item' : 'items'} selected
-          </span>
+          <span className="text-sm text-blue-800">{selectedItems.length === 1 ? 'item' : 'items'} selected</span>
         </div>
 
         <div className="flex items-center gap-2 ml-auto">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onClearSelection}
-            className="text-gray-600"
-          >
+          <Button size="sm" variant="outline" onClick={onClearSelection} className="text-gray-600">
             <X className="h-4 w-4 mr-1" />
             Clear
           </Button>
@@ -162,10 +115,7 @@ export function BulkOperations({
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem
-                onClick={() => setDeleteDialogOpen(true)}
-                className="text-red-600 focus:text-red-600"
-              >
+              <DropdownMenuItem onClick={() => setDeleteDialogOpen(true)} className="text-red-600 focus:text-red-600">
                 <Trash2 className="h-4 w-4 mr-2" />
                 Delete Selected
               </DropdownMenuItem>
@@ -179,17 +129,12 @@ export function BulkOperations({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Selected Items</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {selectedItems.length} selected item{selectedItems.length !== 1 ? 's' : ''}?
-              This action cannot be undone.
+              Are you sure you want to delete {selectedItems.length} selected item{selectedItems.length !== 1 ? 's' : ''}? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleBulkDelete}
-              disabled={isLoading}
-              className="bg-red-600 hover:bg-red-700"
-            >
+            <AlertDialogAction onClick={handleBulkDelete} disabled={isLoading} className="bg-red-600 hover:bg-red-700">
               {isLoading ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -204,19 +149,11 @@ export function useBulkSelection<T extends { uid: string }>(data: T[] = []) {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   const toggleItem = (id: string) => {
-    setSelectedItems(prev =>
-      prev.includes(id)
-        ? prev.filter(item => item !== id)
-        : [...prev, id]
-    );
+    setSelectedItems(prev => (prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]));
   };
 
   const toggleAll = () => {
-    setSelectedItems(prev =>
-      prev.length === data.length
-        ? []
-        : data.map(item => item.uid)
-    );
+    setSelectedItems(prev => (prev.length === data.length ? [] : data.map(item => item.uid)));
   };
 
   const clearSelection = () => {
@@ -235,6 +172,6 @@ export function useBulkSelection<T extends { uid: string }>(data: T[] = []) {
     isSelected,
     isAllSelected,
     isIndeterminate,
-    selectedCount: selectedItems.length
+    selectedCount: selectedItems.length,
   };
-} 
+}

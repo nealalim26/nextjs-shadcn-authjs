@@ -1,4 +1,4 @@
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from '@tanstack/react-table';
 
 export interface DataTableProps<TData, TValue> {
   tableName: string;

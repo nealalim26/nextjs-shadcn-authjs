@@ -1,54 +1,36 @@
-"use client"
+'use client';
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
-import Link from "next/link"
+import { ChevronRight, type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
 
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubButton, SidebarMenuSubItem } from '@/components/ui/sidebar';
 
 export function NavCollapsible({
   label,
   items,
 }: {
-  label: string
+  label: string;
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-      icon?: LucideIcon
-    }[]
-  }[]
+      title: string;
+      url: string;
+      icon?: LucideIcon;
+    }[];
+  }[];
 }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) =>
+        {items.map(item =>
           item.items && item.items.length > 0 ? (
-            <Collapsible
-              key={item.title}
-              asChild
-              defaultOpen={item.isActive}
-              className="group/collapsible"
-            >
+            <Collapsible key={item.title} asChild defaultOpen={item.isActive} className="group/collapsible">
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
                   <TooltipProvider delayDuration={200}>
@@ -68,7 +50,7 @@ export function NavCollapsible({
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <SidebarMenuSub>
-                    {item.items.map((subItem) => (
+                    {item.items.map(subItem => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <TooltipProvider delayDuration={200}>
                           <Tooltip>
@@ -113,5 +95,5 @@ export function NavCollapsible({
         )}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

@@ -1,78 +1,71 @@
-import {
-  CameraIcon,
-  FileCodeIcon,
-  FileTextIcon,
-  HelpCircleIcon,
-  LayoutDashboardIcon,
-  SettingsIcon,
-} from "lucide-react"
+import { CameraIcon, FileCodeIcon, FileTextIcon, HelpCircleIcon, LayoutDashboardIcon, SettingsIcon } from 'lucide-react';
 
 export const data = {
   navMain: [
     {
-      title: "Dashboard",
-      url: "/",
+      title: 'Dashboard',
+      url: '/',
       icon: LayoutDashboardIcon,
     },
   ],
   navClouds: [
     {
-      title: "Capture",
+      title: 'Capture',
       icon: CameraIcon,
       isActive: true,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
     {
-      title: "Proposal",
+      title: 'Proposal',
       icon: FileTextIcon,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
     {
-      title: "Prompts",
+      title: 'Prompts',
       icon: FileCodeIcon,
-      url: "#",
+      url: '#',
       items: [
         {
-          title: "Active Proposals",
-          url: "#",
+          title: 'Active Proposals',
+          url: '#',
         },
         {
-          title: "Archived",
-          url: "#",
+          title: 'Archived',
+          url: '#',
         },
       ],
     },
   ],
   navSecondary: [
     {
-      title: "Settings",
-      url: "#",
+      title: 'Settings',
+      url: '#',
       icon: SettingsIcon,
     },
     {
-      title: "Messaging Center",
-      url: "#",
+      title: 'Messaging Center',
+      url: '#',
       icon: HelpCircleIcon,
     },
   ],
-}
+};

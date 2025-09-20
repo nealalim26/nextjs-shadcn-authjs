@@ -1,57 +1,52 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Loader2 } from 'lucide-react';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-})
+  email: z.string().email('Please enter a valid email address'),
+});
 
-type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>
+type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<ForgotPasswordForm>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
-  })
+  });
 
   const onSubmit = async (data: ForgotPasswordForm) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      console.log("Forgot password data:", data)
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Forgot password data:', data);
       // Handle success
     } catch (error) {
-      console.error("Error:", error)
+      console.error('Error:', error);
       // Handle error
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex">
       {/* Left Column - Image */}
       <div className="flex-1 relative">
-        <img
-          src="/placeholder.svg?height=800&width=600"
-          alt="Forgot password background"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <Image src="/placeholder.svg?height=800&width=600" alt="Forgot password background" fill className="object-cover" priority />
       </div>
 
       {/* Right Column - Form */}
@@ -72,9 +67,7 @@ export default function ForgotPasswordPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <div className="text-center">
                 <h1 className="text-2xl font-semibold text-gray-900">Forgot Password?</h1>
-                <p className="text-gray-600 mt-2 leading-relaxed">
-                  Enter the email associated with your account and we'll send you a link to reset your password.
-                </p>
+                <p className="text-gray-600 mt-2 leading-relaxed">Enter the email associated with your account and we&apos;ll send you a link to reset your password.</p>
               </div>
 
               <FormField
@@ -82,9 +75,7 @@ export default function ForgotPasswordPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-sm font-medium text-gray-700">
-                      Email address
-                    </FormLabel>
+                    <FormLabel className="text-sm font-medium text-gray-700">Email address</FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -98,18 +89,14 @@ export default function ForgotPasswordPage() {
                 )}
               />
 
-              <Button
-                type="submit"
-                className="w-full py-2 px-4 rounded-md font-medium"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full py-2 px-4 rounded-md font-medium" disabled={isLoading}>
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Sending...
                   </>
                 ) : (
-                  "Reset Password"
+                  'Reset Password'
                 )}
               </Button>
 
@@ -126,5 +113,5 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

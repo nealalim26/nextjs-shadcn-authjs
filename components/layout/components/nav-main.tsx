@@ -1,28 +1,21 @@
-"use client"
+'use client';
 
-import { MailIcon, PlusCircleIcon, type LucideIcon } from "lucide-react"
-import Link from "next/link"
+import { type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
 
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    badge?: string
-  }[]
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    badge?: string;
+  }[];
 }) {
   return (
     <SidebarGroup>
@@ -48,7 +41,7 @@ export function NavMain({
         </SidebarMenu> */}
         <SidebarMenu>
           <TooltipProvider delayDuration={200}>
-            {items.map((item) => (
+            {items.map(item => (
               <SidebarMenuItem key={`${item.title}-${item.url}`}>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -74,5 +67,5 @@ export function NavMain({
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
-  )
+  );
 }

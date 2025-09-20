@@ -1,12 +1,12 @@
-import { auth } from "@/lib/auth"
-import { redirect } from "next/navigation"
-import Layout from "@/components/layout"
+import { auth } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import Layout from '@/components/layout';
 
 export default async function Home() {
-  const session = await auth()
+  const session = await auth();
 
   if (!session) {
-    redirect("/auth/login")
+    redirect('/auth/login');
   }
 
   return (

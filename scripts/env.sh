@@ -23,6 +23,50 @@ EOF
 
 echo "✅ Environment file created: .env"
 echo ""
+echo "🔧 Running post-setup commands..."
+
+# Install dependencies
+echo "📦 Installing dependencies..."
+npm install
+if [ $? -ne 0 ]; then
+    echo "❌ npm install failed"
+    exit 1
+fi
+
+# Install with legacy peer deps (for compatibility)
+echo "📦 Installing with legacy peer deps..."
+npm install --legacy-peer-deps
+if [ $? -ne 0 ]; then
+    echo "❌ npm install --legacy-peer-deps failed"
+    exit 1
+fi
+
+# Run linting
+echo "🔍 Running linter..."
+npm run lint
+if [ $? -ne 0 ]; then
+    echo "⚠️  Linting issues found, but continuing..."
+fi
+
+# Run formatting
+echo "✨ Running formatter..."
+npm run format
+if [ $? -ne 0 ]; then
+    echo "❌ npm run format failed"
+    exit 1
+fi
+
+# Run build
+echo "🏗️  Running build..."
+npm run build
+if [ $? -ne 0 ]; then
+    echo "❌ npm run build failed"
+    exit 1
+fi
+
+echo ""
+echo "🎉 Setup completed successfully!"
+echo ""
 echo "📝 Next steps:"
 echo "1. Update the OAuth provider credentials in .env"
 echo "2. For GitHub: Go to https://github.com/settings/developers"
